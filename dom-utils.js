@@ -33,9 +33,9 @@
    */
   init.fn.getEl = function() {
     if (this.$el.length > 1) {
-      return this.$el;
+      return this.$el;    
     } else {
-      return this.$el[0];
+      return this.$el[0]; // HTMLElement
     }
   };
 
@@ -158,6 +158,72 @@
     }
 
     return this.findParentByName(name, $element.parentElement);
+  };
+
+  /**
+   * 해당 요소의 값을 가져온다.
+   * @returns element value
+   */
+  init.fn.val = function() {
+    let elSize = this.$el.length;
+
+    if (!elSize) {
+      // $el이 없으면 null 반환
+      return null;
+    }
+
+    if (elSize > 1) {
+      let arr = [];
+      for (let i=0;i<elSize;i++) {
+        let $element = this.$el[i];  
+        if ($element.checked) {
+          arr.push($element.value);
+        }
+      }
+      return arr;
+    } else {
+      let $element = this.$el[0];
+      let $type = $element.type;
+
+      switch ($type) {
+        case 'text':
+          return $element.value || '';
+        case 'radio':
+          return $element.value || '';
+        case 'select-one':
+          return $element.value || '';
+        case 'checkbox':
+          return $element.checked;
+      }
+    }
+  };
+
+  /**
+   * element 복사
+   * @returns 
+   */
+  init.fn.clone = function() {
+    let elSize = this.$el.length;
+
+    if (elSize > 1 || elSize < 1) {
+      return new Error(' element is nothing or one more things !!! ');
+    }
+
+    return this.$el[0].cloneNode(true);
+  };
+
+  /**
+   * 자식 노드 모두 삭제
+   * @returns 
+   */
+  init.fn.removeChildAll = function() {
+    let elSize = this.$el.length;
+
+    if (elSize > 1 || elSize < 1) {
+      return new Error(' element is nothing or one more things !!! ');
+    }
+
+    return this.$el[0].innerHTML = '';
   };
 
   var find = function(_context_, selector) {
