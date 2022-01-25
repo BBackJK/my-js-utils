@@ -223,7 +223,33 @@
       return new Error(' element is nothing or one more things !!! ');
     }
 
-    return this.$el[0].innerHTML = '';
+    this.$el[0].innerHTML = '';
+  };
+
+  /**
+   * element display: block
+   */
+  init.fn.show = function() {
+    let elSize = this.$el.length;
+
+    if (elSize > 1 || elSize < 1) {
+      return new Error(' element is nothing or one more things !!! ');
+    }
+
+    this.$el[0].style.display = 'block';
+  };
+
+  /**
+   * element display: none
+   */
+  init.fn.hide = function() {
+    let elSize = this.$el.length;
+
+    if (elSize > 1 || elSize < 1) {
+      return new Error(' element is nothing or one more things !!! ');
+    }
+
+    this.$el[0].style.display = 'none';
   };
 
   var find = function(_context_, selector) {
@@ -282,10 +308,9 @@
     }
   };
 
-
   /**
    * @Description 페이지가 로드될 때까지 기다렸다가 해당 attritube 찾기
-   * @Attributes onlyNumber(숫자만) / formatCost(숫자 && comma)
+   * @Attributes onlyNumber(숫자만) / toComma(숫자 && comma)
    */
   document.addEventListener("DOMContentLoaded", function() {
     let onlyNumInputList = Array.prototype.slice.call(document.querySelectorAll('[onlyNumber]'));
@@ -299,7 +324,7 @@
       }
     }
 
-    let formatCostList = Array.prototype.slice.call(document.querySelectorAll('[formatCost]'));
+    let formatCostList = Array.prototype.slice.call(document.querySelectorAll('[toComma]'));
   
     for (let i=0, l=formatCostList.length; i<l; i++) {
       let formatCostEl = formatCostList[i];
