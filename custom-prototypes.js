@@ -135,7 +135,7 @@ Array.prototype.getItemById = function(id) {
     return null;
   }
 
-  let temp = this.filter(function(obj) {
+  return this.filter(function(obj) {
 
     if (obj.id === null || typeof obj.id === 'undefined') {
       console.error(' obj is not include id property ');
@@ -144,8 +144,6 @@ Array.prototype.getItemById = function(id) {
 
     return obj.id === id;
   })[0];
-
-  return temp;
 }
 
 /**
