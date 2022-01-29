@@ -97,7 +97,7 @@
     if (l) {
       for (let i=0; i<l; i++) {
         let target = $target[i];
-        if (target.nodeType === 1) {
+        if (isElementType(target)) {
 
           let $type = target.type;
           let $value = target.value;
@@ -202,8 +202,7 @@
       if ($target.hasChildNodes()) {
         for (let i=0, l=$target.childNodes.length; i<l; i++) {
           let target = $target.childNodes[i];
-          if (target.nodeType === 1) {  // nodeType: 1 (element 요소)
-
+          if (isElementType(target)) {  // nodeType: 1 (element 요소)
             let $type = target.type;
             let $value = target.value;
             let $name = target.getAttribute('name');
@@ -294,6 +293,18 @@
       }
     }
   };
+
+  // let target = $target.childNodes[i];
+  // if (target.nodeType === 1) {  // nodeType: 1 (element 요소)
+
+  var isElementType = function($target) {
+    if ($target.nodeType) {
+      return $target.nodeType === 1;
+    } else {
+      console.error($target + ' is not HTMLElement. Please Checking Type. ');
+      return false;
+    }
+  }
 
   var checkType = function(val, type) {
     return typeof val === type;
