@@ -6,6 +6,13 @@ String.prototype.isEmpty = function() {
   return this.toString().isEquals('');
 }
 
+/**
+* hp format ('-' : 하이픈) replace
+*/
+String.prototype.hpToString = function() {
+  return this.toString().replace(/\-/gi, '');
+}
+
 Number.prototype.isEquals = function(num) {
   if (typeof num === 'string') {
     console.warn(' argument type is string !!! ');
@@ -89,10 +96,6 @@ Array.prototype.isEmpty = function() {
  * @returns 
  */
 Array.prototype.ieIncludes = function(data) {
-  if (!data) {
-    return false;
-  }
-
   return this.indexOf(data) >= 0;
 }
 
@@ -144,6 +147,36 @@ Array.prototype.getItemById = function(id) {
 
     return obj.id === id;
   })[0];
+}
+
+/**
+* 객체로 이루어진 Array에서 id로 해당 객체 Index 찾기
+* @param {*} id
+* @returns
+*/
+Array.prototype.getIndexById = function(id) {
+  if (id === null || typeof id === 'undefined' || typeof id !== 'number') {
+      console.error(' argument type is not number');
+      return null;
+  }
+
+  let index = -1;
+
+  for(let i=0,l=this.length; i<l; i++) {
+      let obj = this[i];
+
+      if (obj.id === null || typeof obj.id === 'undefined') {
+          console.error(' obj is not include id property ');
+          return false;
+      }
+
+      if (obj.id === id) {
+          index = i;
+          break;
+      }
+  }
+
+return index;
 }
 
 /**
