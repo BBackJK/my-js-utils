@@ -13,6 +13,13 @@ String.prototype.hpToString = function() {
   return this.toString().replace(/\-/gi, '');
 }
 
+/**
+ * 문자열 포함하는지 확인
+ */
+String.prototype.hasText = function(val) {
+  return this.toString().indexOf(val) >= 0;
+}
+
 Number.prototype.isEquals = function(num) {
   if (typeof num === 'string') {
     console.warn(' argument type is string !!! ');
@@ -186,7 +193,7 @@ return index;
  */
 Array.prototype.getItemByIndex = function(index) {
   if (index === null || typeof index === 'undefined' || typeof index !== 'number') {
-    console.error(' argument type is not number');
+    console.error(' argument type is not number ');
     return null;
   }
 
@@ -252,5 +259,18 @@ Array.prototype.convertNumberToString = function() {
   }
 
   return this.toString().split(',');
+}
+
+/**
+ * 객체로 이루어진 Array에서 id list 출력
+ */
+Array.prototype.takeIdList = function() {
+  return this.map(function(obj) {
+      if (obj.id === null || typeof obj.id === 'undefined') {
+          console.error(' obj is not include id property ');
+          return false;
+      }
+      return obj.id;
+  });
 }
 /** Array prototype E */
