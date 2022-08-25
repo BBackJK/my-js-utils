@@ -118,7 +118,8 @@
   $DATE.takeGap = function (val1, val2, limitType) {
     const date1 = getCompareValueToDate(val1);
     const date2 = getCompareValueToDate(val2);
-    if (!date1 || !date2) {
+
+    if (!isDate(date1) || !isDate(date2)) {
       console.error(' argument value can not convert to Date. ');
       return [];
     }
@@ -174,6 +175,53 @@
     }  
 
     return [gapYear, gapMonth, gapDate, gapHours, gapMinutes, gapSeconds];
+  };
+
+  /**
+   * argument 사이 모든 DATE를 구한다.
+   * @param {*} val1 
+   * @param {*} val2 
+   * @param {*} step
+   * 예시;
+   * const arr = $DATE.takeBetweenList('2022-10-01', '2022-09-01', 2);
+   * if (Array.isArray(arr)) {
+      const arr2 = arr.map(function ($) {
+        return $.toString('yyyy-mm-dd');
+      });
+
+      console.log(arr2); // ['2022-09-01', '2022-09-03', '2022-09-05', ... , '2022-09-29', '2022-10-01'];
+    }
+   */
+  $DATE.takeBetweenList = function (val1, val2, step) {
+
+    if (typeof step !== 'number') {
+      step = 1;
+    }
+
+    const date1 = getCompareValueToDate(val1);
+    const date2 = getCompareValueToDate(val2);
+
+    if (!isDate(date1) || !isDate(date2)) {
+      console.error(' argument value can not convert to Date. ');
+      return [];
+    }
+
+    let startDate = date1;
+    let endDate = date2;
+
+    if (date1.getTime() >= date2.getTime()) {
+      startDate = date2;
+      endDate = date1;
+    }
+
+    let result = [];
+
+    while (startDate <= endDate) {
+      result.push(new $DATE(startDate));
+      startDate.setDate(startDate.getDate() + step);
+    }
+
+    return result;
   };
 
   // 외부에서 접근할 수 있는 api 추가
@@ -565,7 +613,7 @@
 
     const date = isDate(val) ? val : new Date(val);
 
-    return isDate(date) ? date : new Date();
+    return isDate(date) ? new Date(date.getTime()) : new Date();
   };
 
   const isDate = function (value) {

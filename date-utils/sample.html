@@ -3,18 +3,26 @@
   <head>
     <title>테스트</title>
   
-    <!-- <script src="./date-utils.js"></script> -->
-    <script src="./dist/date-utils.min.js"></script>
+    <script src="./date-utils.js"></script>
+    <!-- <script src="./dist/date-utils.min.js"></script> -->
   </head>
   <body>
 
   </body>
 
   <script>
-    const test = new $DATE('2022-08-25');
-    const eTest = test.takeEnd();
-    console.log(eTest.date);
-    console.log(eTest.toString('yyyy-mm-dd hh:mm'));
+    // const arr = $DATE.takeBetweenList('2022-09-01', '2022-10-01');
+    const arr = $DATE.takeBetweenList('2022-10-01', '2022-09-01', 2);
+    
+    console.log(arr);
+
+    if (Array.isArray(arr)) {
+      const arr2 = arr.map(function ($) {
+        return $.toString('yyyy-mm-dd');
+      });
+
+      console.log(arr2);
+    }
     
   </script>
 </html>

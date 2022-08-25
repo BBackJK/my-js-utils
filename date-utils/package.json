@@ -6,6 +6,7 @@
   "devDependencies": {
     "gulp": "^4.0.2",
     "gulp-javascript-obfuscator": "^1.1.6",
+    "gulp-rename": "^2.0.0",
     "gulp-uglify-es": "^3.0.0"
   }
 }
