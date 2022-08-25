@@ -34,41 +34,42 @@ Number.prototype.isEquals = function(num) {
 }
 
 /** Object prototype S */
-Object.prototype.isEquals = function(obj) {
+// object prototype을 확장하는 것은 매우 안좋은 일이다.
+// Object.prototype.isEquals = function(obj) {
 
-  if (!obj) {
-    return false;
-  }
+//   if (!obj) {
+//     return false;
+//   }
 
-  const thisKeys = Object.keys(this);
-  const objKeys = Object.keys(obj);
+//   const thisKeys = Object.keys(this);
+//   const objKeys = Object.keys(obj);
 
-  if (thisKeys.length !== objKeys.length) {
-    return false;
-  }
+//   if (thisKeys.length !== objKeys.length) {
+//     return false;
+//   }
 
-  for (let k of thisKeys) {
-    if (this[k] !== obj[k]) {
-      return false;
-    }
-  }
-  return true;
-}
+//   for (let k of thisKeys) {
+//     if (this[k] !== obj[k]) {
+//       return false;
+//     }
+//   }
+//   return true;
+// }
 
-Object.prototype.isEmpty = function() {
-  return !Object.keys(this).length;
-}
+// Object.prototype.isEmpty = function() {
+//   return !Object.keys(this).length;
+// }
 
-/**
- * 객체 안에있는 value 타입이 string인 경우 trim 시킨다.
- */
-Object.prototype.clear = function() {
-  for (let key in this) {
-    if (typeof this[key] === 'string') {
-      this[key] = this[key].trim();
-    }
-  }
-}
+// /**
+//  * 객체 안에있는 value 타입이 string인 경우 trim 시킨다.
+//  */
+// Object.prototype.clear = function() {
+//   for (let key in this) {
+//     if (typeof this[key] === 'string') {
+//       this[key] = this[key].trim();
+//     }
+//   }
+// }
 /** Object prototype E */
 
 /** Array prototype S */

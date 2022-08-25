@@ -7,6 +7,7 @@
   }
 
 })(typeof window !== "undefined" ? window : this, function (window) {
+  
   var JK_DOM_UTILS = function(selector) {
     let instance = new JK_DOM_UTILS.prototype.init(selector);
     if (!instance.$el) {
@@ -310,31 +311,41 @@
 
   /**
    * @Description 페이지가 로드될 때까지 기다렸다가 해당 attritube 찾기
-   * @Attributes onlyNumber(숫자만) / toComma(숫자 && comma)
+   * @Attributes onlyNumber(숫자만) / toComma(숫자 && comma) / onlyNumberDot(소수점 표시 숫자)
    */
   document.addEventListener("DOMContentLoaded", function() {
     let onlyNumInputList = Array.prototype.slice.call(document.querySelectorAll('[onlyNumber]'));
-    
+
     for (let i=0, l=onlyNumInputList.length; i<l; i++) {
       let onlyNumEl = onlyNumInputList[i];
       if (onlyNumEl.nodeName === 'INPUT') {    // input 일 때에만 체크
+        onlyNumEl.addEventListener('keyup', function() {
+          this.value = toNumber(this.value);
+        });
+      }
+    }
+
+    let onlyDotNumInputList = Array.prototype.slice.call(document.querySelectorAll('[onlyNumberDot]'));
+
+    for (let i=0, l=onlyDotNumInputList.length; i<l; i++) {
+      let onlyNumEl = onlyDotNumInputList[i];
+      if (onlyNumEl.nodeName === 'INPUT') {    // input 일 때에만 체크
         onlyNumEl.addEventListener('input', function() {
-          this.value = uncomma(this.value);
-        })
+          this.value = toDotNumber(this.value);
+        });
       }
     }
 
     let formatCostList = Array.prototype.slice.call(document.querySelectorAll('[toComma]'));
-  
+
     for (let i=0, l=formatCostList.length; i<l; i++) {
       let formatCostEl = formatCostList[i];
       if (formatCostEl.nodeName === 'INPUT') {    // input 일 때에만 체크
-        formatCostEl.addEventListener('input', function() {
-          this.value = comma(uncomma(this.value));
-        })
+        formatCostEl.addEventListener('keyup', function() {
+          this.value = toComma(toNumber(this.value));
+        });
       }
     }
-
   });
 
   var comma = function(str) {
@@ -345,6 +356,11 @@
   var uncomma = function(str) {
     str = String(str);
     return str.replace(/[^\d]+/g, '');
+  }
+
+  var toDotNumber = function(str) {
+    str = String(str);
+    return str.replace(/[^\d|\.]+/g, '');
   }
 
   window.JDU = window.$JDU = JK_DOM_UTILS;
