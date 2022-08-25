@@ -401,7 +401,6 @@
     }
 
     let compareDate = getCompareValueToDate(value);
-    console.log(compareDate);
     if (!isDate(compareDate)) {
       return false;
     }

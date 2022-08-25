@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>테스트</title>
+    <script src="./common-utils.js?v=1"></script>
+    <script src="./custom-prototypes.js"></script>
+    <script src="./dom-utils.js"></script>
+    <!-- <script src="./real.js"></script> -->
+  </head>
+  <body>
+    <div id="container" class="temp" name="title">
+      <h1 name="title" class="title">하이!</h1>
+      <h2 name="title" class="title2">하이2!</h2>
+      <button type="button" class="test" id="test-btn">버튼</button>
+      <button type="button" class="test" id="test-btn2">버튼2</button>
+    </div>
+    <div id="container2">
+      <div class="item-container">
+        <span class="item-span" id="span-id">1</span>
+      </div>
+      <div class="item-container">
+        <span class="item-span">2</span>
+      </div>
+      <div class="item-container">
+        <span class="item-span">3</span>
+      </div>
+    </div>
+
+
+
+    <div id="container3">
+      <div id="test333">
+        <label for="name"> 이름 : </label>
+        <input type="text" placeholder="id" id="name" name="name" 
+        data-required="true" data-message="이름은 필수 값입니다."
+        />
+
+        <!-- <div> -->
+          <label for="checked">체크: </label>
+          <input type="checkbox" value="true" id="checked" name="checked" 
+          data-required="true" data-message="체크사항을 체크하셔야 합니다."
+          />
+        <!-- </div> -->
+
+        <label for="checked2">1번 체크: </label>
+        <input type="checkbox" value="1" id="checked2" name="checked2" 
+        />
+
+        <label for="checked3">2번 체크: </label>
+        <input type="checkbox" value="2" id="checked3" name="checked2" />
+
+        <label for="checked4">3번 체크: </label>
+        <input type="checkbox" value="3" id="checked4" name="checked2" />
+
+        <label for="checked5">4번 체크: </label>
+        <input type="checkbox" value="4" id="checked5" name="checked2" 
+        data-required="true" data-message="하나 이상 체크하셔야 합니다."
+        />
+
+        
+
+        <select name="selected" id="selected"
+        data-required="true" data-message="선택사항을 선택하세요."
+        >
+          <option value="">선택</option>
+          <option value="a">A</option>
+          <option value="b">B</option>
+          <option value="c">C</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="age"> 나이 : </label>
+        <input type="text" placeholder="age" id="age" name="age" 
+        data-required="true" data-message="나이는 필수 입력값입니다." onlyNumber />세
+      </div>
+
+      <div>
+        <label for="cost"> 금액 : </label>
+        <input type="text" placeholder="cost" id="cost" name="cost" formatCost />
+      </div>
+
+      <div>
+        <label for="radio1">1번 라디오: </label>
+        <input type="radio" value="apple" id="radio1" name="radio2" checked />
+
+        <label for="radio2">2번 라디오: </label>
+        <input type="radio" value="banana" id="radio2" name="radio2" />
+
+        <label for="radio3">3번 라디오: </label>
+        <input type="radio" value="lemon" id="radio3" name="radio2" 
+        />
+      </div>
+    </div>
+
+    <div id="container4"></div>
+
+    <script>
+      let $btn = $JDU('#test-btn');
+      let $btn2 = $JDU('#test-btn2');
+
+      let container3 = $JDU('#container3');
+
+      $btn.addEvent('click', function(e) {
+        container3.hide();
+      });
+
+      $btn2.addEvent('click', function(e) {
+        container3.show();
+      });
+    </script>
+  </body>
+</html>

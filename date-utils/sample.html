@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>테스트</title>
+  
+    <!-- <script src="./date-utils.js"></script> -->
+    <script src="./dist/date-utils.min.js"></script>
+  </head>
+  <body>
+
+  </body>
+
+  <script>
+    const test = new $DATE('2022-08-25');
+    const eTest = test.takeEnd();
+    console.log(eTest.date);
+    console.log(eTest.toString('yyyy-mm-dd hh:mm'));
+    
+  </script>
+</html>
