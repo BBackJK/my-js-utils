@@ -74,12 +74,40 @@
   const PER_MONTH = PER_DATE * 12;
 
   // 객체
-  const $DATE = function(value) {
+  const $DATE = function() {
 
     const _this = this;
+
+    let _input = undefined;
     
-    _this.input = value;
-    _this.date = toDate(value);
+    if (arguments.length < 1) {
+      _input = new Date();
+    } else if (arguments.length === 1 && isString(arguments[0])) {
+      _input = arguments[0];
+    } else {
+
+      const args = Array.prototype.slice.call(arguments);
+
+      for (let i=args.length; i < 6; i++) {
+        args.push( i < 3 ? 1 : 0);
+      }
+
+      const _args = args.map(function (arg) {
+        return zp(arg.toString(), 2);
+      });
+
+      const _year = _args[0],
+            _month = _args[1],
+            _day = _args[2],
+            _hour = _args[3],
+            _minutes = _args[4],
+            _seconds = _args[5];
+
+      _input = _year + '-' + _month + '-' + _day + ' ' + _hour + ':' + _minutes + ':' + _seconds;
+    }
+
+    _this.input = _input;
+    _this.date = toDate(_input);
 
     return Object.freeze(_this);
   };
@@ -97,7 +125,7 @@
    * arugment가 this 타입인지 확인
    * 예시;
    * const test = new $DATE('2022-08-25);
-   * console.log($DATE.isDATE(test));
+   * console.log($DATE.isDATE(test)); // true
    * @param {*} value 
    */
   $DATE.isDATE = function (value) {
@@ -179,9 +207,9 @@
 
   /**
    * argument 사이 모든 DATE를 구한다.
-   * @param {*} val1 
-   * @param {*} val2 
-   * @param {*} step
+   * @param {*} val1 string or number or date
+   * @param {*} val2 string or number or date
+   * @param {*} step number
    * 예시;
    * const arr = $DATE.takeBetweenList('2022-10-01', '2022-09-01', 2);
    * if (Array.isArray(arr)) {
@@ -228,6 +256,7 @@
   const fn = $DATE.fn = $DATE.prototype;
 
   /**
+   * @Deprecated
    * format을 받아서 format형태로 알맞게 변환
    * 지원 포맷
    * yyyyMMdd | yyyyMMddhhmm | yyyyMMddhhmmss | yyyyMMddhhmmssSSS
@@ -243,6 +272,8 @@
    * @param {*} format 
    */
   fn.toString = function (format) {
+
+    throw new Error(' [toString] 메소드는 deprecated 되었습니다. ');
 
     let result = '';
 
@@ -344,6 +375,52 @@
   };
 
   /**
+   * format을 받아서 format형태로 알맞게 변환
+   * @param {string} format 
+   */
+  fn.format = function (format) {
+
+    format = isString(format) ? format : '';
+
+    const dt = this.date;
+
+    if (!isDate(dt)) {
+      return result;
+    }
+
+    let result = '';
+  
+    let weekName = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+
+    return format.replace(/(yyyy|yy|MM|dd|E|hh|mm|ss|a\/p)/gi, function ($1) {
+      switch ($1) {
+          case "yyyy":
+              return dt.getFullYear();
+          case "yy":
+              return zp(dt.getFullYear() % 1000, 2);
+          case "MM":
+              return zp(dt.getMonth() + 1, 2);
+          case "dd":
+              return zp(dt.getDate(), 2);
+          case "E":
+              return weekName[dt.getDay()];
+          case "HH":
+              return zp(dt.getHours(), 2);
+          case "hh":
+              return zp((h = dt.getHours() % 12) ? h : 12, 2);
+          case "mm":
+              return zp(dt.getMinutes(), 2);
+          case "ss":
+              return zp(dt.getSeconds(), 2);
+          case "a/p":
+              return dt.getHours() < 12 ? "오전" : "오후";
+          default:
+              return $1;
+      }
+    });
+  };
+
+  /**
    * argument 값 만큼 year을 계산
    * 예시;
    * const test = new $DATE('2022-08-25');
@@ -430,7 +507,7 @@
   /**
    * 깊은 복사
    */
-  fn.deepCopy = function () {
+  fn.takeInstance = function () {
     return new $DATE(this.input);
   };
 
@@ -482,7 +559,7 @@
    * this 보다 argument (value)가 같은지 판단
    * 예시;
    * const test = new $DATE('2022-08-25');
-   * const test2 = test.deepCopy();
+   * const test2 = test.takeInstance();
    * console.log(test.isSame(test2));
    * @param {*} value 
    */
@@ -645,7 +722,7 @@
       }
     }
 
-    return zero + val;
+    return zero.concat(val);
   };
 
   const getCompareValueToDate = function (value) {
