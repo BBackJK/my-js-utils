@@ -1,7 +1,7 @@
 {
-  "name": "date-utils",
+  "name": "common-utils",
   "version": "1.0.0",
-  "main": "date-utils.js",
+  "main": "index.js",
   "license": "MIT",
   "scripts": {
     "gulp": "gulp uglify"

@@ -385,10 +385,8 @@
     const dt = this.date;
 
     if (!isDate(dt)) {
-      return result;
+      return '';
     }
-
-    let result = '';
   
     let weekName = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
 

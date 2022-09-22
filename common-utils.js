@@ -11,10 +11,6 @@
 
   var fn = JK_COMMON_UTILS.fn = JK_COMMON_UTILS.prototype;
 
-  fn.isNull = function(val) {
-    return val === null;
-  };
-
   /**
    * 깊은 복사
    * @param {*} data 
@@ -80,14 +76,19 @@
     return checkType(val, 'undefined');
   };
 
+  fn.isNull = function(val) {
+    return val === null;
+  };
+
   /**
+   * @Deprecated
    * $target 밑에 있는 모든 DOM을 확인하려 name으로 부터 객체를 얻어온다. (초기값 가져올 때 사용)
    * @param {*} $target HTMLElement
    * @param {*} obj return object
    * @returns obj
    */
   fn.getFormObjData = function($target, validation, obj) {
-    // TODO: 리팩토링 해야함... validation check 해야함
+    throw new Error(' [getFormObjData]는 Deprecated 되었습니다. ');
     if (!obj) obj = {};
     if (!validation) validation = false;
 
@@ -253,11 +254,15 @@
   };
 
   /**
+   * @Deprecated
    * $target 의 자식 노드중에서 name 속성이 object key값과 동일한 경우를 찾아서 데이터를 바인딩
    * @param {*} $target 
    * @param {*} obj 
    */
   fn.bindFormData = function($target, obj) {
+
+    throw new Error(' [bindFormData]는 Deprecated 되었습니다. ');
+
     for (let key in obj) {
       if (typeof obj[key] !== 'function') {   // custom-prototype.js에서 정의한 object 커스텀 프로토타입까지 나옴..
         let $elements = $target.querySelectorAll('[name=' + key +']');

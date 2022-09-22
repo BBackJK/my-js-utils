@@ -1,3 +1,9 @@
+/**
+ * 내장 객체의 prototype은 건드리지말자..
+ * 즉, 사용 X
+ */
+
+
 String.prototype.isEquals = function(str) {
   return typeof str === 'string' && this.toString() === str;
 }
