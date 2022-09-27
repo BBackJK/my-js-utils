@@ -11,11 +11,14 @@
   };
 
   const checkType = function(val, type) {
-    return typeof val === type;
+    return getValueType(val) === type;
+  };
+
+  const getValueType = function (value) {
+    return Object.prototype.toString.call(value).slice(8, -1);
   };
 
   var fn = JK_COMMON_UTILS.fn = JK_COMMON_UTILS.prototype;
-
 
   /** ========================================================
                           공통 util
@@ -73,33 +76,34 @@
   };
 
   fn.isString = function(v) {
-    return checkType(v, 'string');
+    return checkType(v, 'String');
   };
 
   fn.isNumber = function(v) {
-    return checkType(v, 'number');
+    return checkType(v, 'Number');
   };
 
   fn.isObject = function(v) {
-    return !this.isNull(v) && checkType(v, 'object');
+    return checkType(v, 'Object');
+    // return !this.isNull(v) && checkType(v, 'object') && Object.prototype.toString.call(v) === '[object Object]';
   };
 
   fn.isBoolean = function (v) {
-    return checkType(v, 'boolean');
+    return checkType(v, 'Boolean');
   }
 
   fn.isArray = Array.isArray;
 
   fn.isUndefined = function(v) {
-    return checkType(v, 'undefined');
+    return checkType(v, 'Undefined');
   };
 
   fn.isNull = function(v) {
-    return checkType(v, null);
+    return checkType(v, 'Null');
   };
 
   fn.isFunction = function (v) {
-    return checkType(v, 'function');
+    return checkType(v, 'Function');
   };
 
   fn.isElement = function (v) {
@@ -122,7 +126,7 @@
   };
 
   fn.isDate = function (v) {
-    return v && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v);
+    return checkType(v, 'Date') && !isNaN(v);
   };
 
   /**
@@ -995,10 +999,6 @@
     //   return new $DATE(_input);
     // // }
     // // return this;
-  };
-
-  fn.$date.constructor = function () {
-    console.log(2);
   };
 
   const $DATE = function(_input) {
