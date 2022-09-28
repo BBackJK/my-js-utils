@@ -52,7 +52,7 @@
 
   fn.isNullOrEmpty = function(v) {
     
-    if (this.isNull(v)) {
+    if (this.isNull(v) || this.isUndefined(v)) {
       return true;
     }
 
@@ -127,6 +127,10 @@
 
   fn.isDate = function (v) {
     return checkType(v, 'Date') && !isNaN(v);
+  };
+
+  fn.isHTMLCollection = function (v) {
+    return checkType(v, 'HTMLCollection');
   };
 
   /**
@@ -208,9 +212,9 @@
      * Array arr 의 마지막 요소 가져오기.
      * @param {array} arr
      */
-    getLastItem: function (arr) {
+    getLast: function (arr) {
       const $root = fn;
-      if ($root.isArray(arr) || arr.length < 1) {
+      if (!$root.isArray(arr) || arr.length < 1) {
         return null;
       }
 
@@ -316,7 +320,7 @@
       }
 
       return arr.map(function (item) {
-        if (!$root.isObject(item) || item.hasOwnProperty('id')) {
+        if (!$root.isObject(item) || !item.hasOwnProperty('id')) {
           throw new Error(' array 가 object로 이루어져 있지 않거나 id property가 존재하지 않습니다. ');
         }
 
@@ -549,8 +553,11 @@
         const kv = s.split('=');
         const k = kv[0],
               v = kv.length === 1 ? '' : decodeURIComponent(kv[1].replace(/\+/g, " "));
-        
-        q[k] = this.isArray(na) && this.hasArrayItem(na, k)
+      
+        console.log(na);
+        console.log(k);
+
+        q[k] = this.isArray(na) && this.$array.hasItem(na, k)
               ? (isNaN(parseInt(v, 10)) ? 10 : parseInt(v, 10))
               : v;
       }
@@ -628,15 +635,15 @@
                         dom 관련 util
   ======================================================== */
 
-  fn.$DOM = function (args) {
-    if (!(this.isElement(args) || this.isNodeList(args) || this.isString(args) || this.isArray(args))) {
+  fn.$dom = function (args) {
+    if (!(this.isElement(args) || this.isNodeList(args) || this.isString(args) || this.isArray(args) || this.isHTMLCollection(args))) {
       console.error('element type is not Element or NodeList or String or Array');
       return null;
     }
-    return new _DOM(args);
+    return new $DOM(args);
   };
 
-  const _DOM = function (element) {
+  const $DOM = function (element) {
     this.$el = parseDomList(element);
     return Object.freeze(this);
   };
@@ -644,22 +651,22 @@
   /**
    * dom 가져오기.
    */
-  _DOM.prototype.get = function () {
+  $DOM.prototype.get = function () {
     return this.$el;
   };
  
   /**
    * 첫번째 dom 가져오기.
    */
-  _DOM.prototype.first = function () {
-    return this.$el ? new _DOM(this.$el[0]) : null;
+  $DOM.prototype.first = function () {
+    return this.$el ? new $DOM(this.$el[0]) : null;
   };
 
   /**
    * 마지막 dom 가져오기.
    */
-  _DOM.prototype.last = function () {
-    return this.$el ? new _DOM(this.$el[this.$el.length - 1]) : null;
+  $DOM.prototype.last = function () {
+    return this.$el ? new $DOM(this.$el[this.$el.length - 1]) : null;
   };
 
   /**
@@ -667,7 +674,7 @@
    * @param {String} eventName 
    * @param {Function} callbackFunc 
    */
-  _DOM.prototype.addEvent = function (eventName, callbackFunc) {
+  $DOM.prototype.addEvent = function (eventName, callbackFunc) {
     const $root = fn;
     if (!$root.isString(eventName) || !$root.isFunction(callbackFunc)) {
       throw new Error(' first argument type is available only string, second argument type is available function');
@@ -681,7 +688,7 @@
    * dom 요소에 className 추가
    * @param {string} className 
    */
-  _DOM.prototype.addClass = function (className) {
+  $DOM.prototype.addClass = function (className) {
     className = className || '';
     for (let el of this.$el) {
       el.classList.add(className.toString());
@@ -692,7 +699,7 @@
    * dom 요소에 className 삭제
    * @param {string} className 
    */
-  _DOM.prototype.removeClass = function (className) {
+  $DOM.prototype.removeClass = function (className) {
     className = className || '';
     for (let el of this.$el) {
       el.classList.remove(className.toString());
@@ -703,7 +710,7 @@
    * dom 요소에 className 토글
    * @param {string} className 
    */
-  _DOM.prototype.toggleClass = function (className) {
+  $DOM.prototype.toggleClass = function (className) {
     className = className || '';
     for (let el of this.$el) {
       el.classList.toggle(className.toString());
@@ -713,16 +720,18 @@
   /**
    * dom 요소 display block
    */
-  _DOM.prototype.show = function () {
+  $DOM.prototype.show = function (displayValue) {
+    const $root = fn;
+    displayValue = !$root.isString(displayValue) ? '' : displayValue;
     this.setCss({
-      display: 'show'
+      display: displayValue
     });
   };
 
   /**
    * dom 요소 display none
    */
-  _DOM.prototype.hide = function () {
+  $DOM.prototype.hide = function () {
     this.setCss({
       display: 'none'
     });
@@ -732,28 +741,34 @@
    * dom 요소 css style 직접 설정.
    * @param {object} css css 옵션들을 객체로 표현.
    */
-  _DOM.prototype.setCss = function (css) {
+  $DOM.prototype.setCss = function (css) {
     const $root = fn;
     if (!$root.isObject(css)) {
       css = {};
     }
     const cssString = JSON.stringify(css);
 
-    // 속성들의 root node 찾기. (하나의 진입점.)
-    let rootElement = findRootParent(this.$el);
-    // root node를 child까지 clone
-    const cpRoot = rootElement.cloneNode(true);
-    for (let el of this.$el) {
+    // // 속성들의 root node 찾기. (하나의 진입점.)
+    // const rootElement = findRootParent(this.$el);
+    // // root node를 child까지 clone
+    // const cpRoot = rootElement.cloneNode(true);
+
+    for (let i=0; i < this.$el.length; i++) {
+      const el = this.$el[i];
+
       // el 의 innerHTML 과 같은 놈을 찾아서 
       // TODO: 리팩토링 해야할거같다.
-      const $target = findDomByInnerHtml(Array.prototype.slice.call(cpRoot.children), el);
+      // const $target = findDomByInnerHtml(Array.prototype.slice.call(cpRoot.childNodes), el);
       // 스타일 변경
-      $target.style.cssText = cssString.substring(1, cssString.length - 1).replace(/\"/g, '').replace(/\,/g, ';');
+      el.style.cssText = cssString.substring(1, cssString.length - 1).replace(/\"/g, '').replace(/\,/g, ';');
+
+      // this.$el[i] = $target;
     }
-    // child 대체.
-    // 이렇게 해주는 이유: 직접적으로 각각 변경하면 요소의 개수마다 repainting 이 발생하여
-    // 속도에 영향을 줌. (virtual dom 식으로 한꺼번에 처리하기.)
-    rootElement.replaceWith(cpRoot);
+
+    // // child 대체.
+    // // 이렇게 해주는 이유: 직접적으로 각각 변경하면 요소의 개수마다 repainting 이 발생하여
+    // // 속도에 영향을 줌. (virtual dom 식으로 한꺼번에 처리하기.)
+    // rootElement.replaceWith(cpRoot);
   };
 
   /**
@@ -764,7 +779,7 @@
       if (source[i].innerHTML === target.innerHTML) {
         return source[i];
       } else {
-        let value = findDomByInnerHtml(source[i].children, target);
+        let value = findDomByInnerHtml(source[i].childNodes, target);
         if (value) {
           return value;
         }
@@ -775,7 +790,7 @@
   /**
    * dom 요소의 부모 요소 가져오기
    */
-  _DOM.prototype.parent = function () {
+  $DOM.prototype.parent = function () {
     const $root = fn;
     let r = [];
     for (let el of this.$el) {
@@ -783,14 +798,14 @@
         r.push(el.parentElement);
       }
     }
-    return new _DOM(r);
+    return new $DOM(r);
   };
 
   /**
    * dom 요소로부터 id 값으로 부모 요소 찾기.
    * @param {string} id 
    */
-  _DOM.prototype.findParentById = function (id) {
+  $DOM.prototype.findParentById = function (id) {
     const $root = fn;
 
     let r = [];
@@ -801,14 +816,14 @@
       }
     }
 
-    return new _DOM(r);
+    return new $DOM(r);
   };
 
   /**
    * dom 요소로부터 class 명으로 부모 요소 찾기.
    * @param {string} className 
    */
-  _DOM.prototype.findParentByClass = function (className) {
+  $DOM.prototype.findParentByClass = function (className) {
     const $root = fn;
 
     let r = [];
@@ -819,7 +834,7 @@
       }
     }
 
-    return new _DOM(r);
+    return new $DOM(r);
   };
 
   /**
@@ -827,7 +842,7 @@
    * @param {string} name
    * @param {HTMLElement|NodeList} element 
    */
-  _DOM.prototype.findParentByName = function (name) {
+  $DOM.prototype.findParentByName = function (name) {
     const $root = fn;
 
     let r = [];
@@ -838,13 +853,13 @@
       }
     }
 
-    return new _DOM(r);
+    return new $DOM(r);
   };
 
   /**
    * dom 요소의 다음 요소 가져오기
    */
-  _DOM.prototype.next = function () {
+  $DOM.prototype.next = function () {
     const $root = fn;
     let r = [];
     for (let el of this.$el) {
@@ -852,13 +867,13 @@
         r.push(el.nextElementSibling);
       }
     }
-    return new _DOM(r);
+    return new $DOM(r);
   };
 
   /**
    * dom 요소의 이전 요소 가져오기
    */
-  _DOM.prototype.prev = function () {
+  $DOM.prototype.prev = function () {
     const $root = fn;
     let r = [];
     for (let el of this.$el) {
@@ -866,10 +881,10 @@
         r.push(el.previousElementSibling);
       }
     }
-    return new _DOM(r);
+    return new $DOM(r);
   };
 
-  _DOM.prototype.find = function (selector) {
+  $DOM.prototype.find = function (selector) {
 
     let arr = [];
 
@@ -879,7 +894,7 @@
       }
     }
 
-    return new _DOM(arr);
+    return new $DOM(arr);
   };
 
   /**
@@ -888,6 +903,7 @@
    */
   const parseDomList = function (value) {
     const $root = fn;
+
     // 인자는 다음과 같이 올 수 있다.
     // 1. Element 타입인 경우
     if ($root.isElement(value)) {
@@ -909,6 +925,11 @@
       return value.filter(function (el) {
         return $root.isElement(el);
       });
+    }
+
+    // 5. HTMLCollection 인 경우
+    if ($root.isHTMLCollection(value)) {
+      return Array.prototype.slice.call(value);
     }
 
     return null;
@@ -974,7 +995,7 @@
                         date 관련 util
   ======================================================== */
 
-  fn.$date = $DATE = function () {
+  const $DATE = function () {
     if (!$DATE.isDATE(this)) {
       throw new Error(' add [new] keyword ');
     }
@@ -1011,6 +1032,8 @@
 
     return Object.freeze(_this);
   };
+
+  fn.$date = $DATE;
 
   // 2022-09-01 18:00:00
   const STR_DATE_FORMAT_DATETIME_HYPHEN_REG = /^[0-9]{4}\-[0-9]{1,2}\-[0-9]{1,2}\s[0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}$/;
@@ -1109,7 +1132,7 @@
 
     const weekName = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
 
-    return f.replace(/(yyyy|yy|MM|dd|E|hh|mm|ss|a\/p)/gi, function ($1) {
+    return f.replace(/(yyyy|yy|MM|dd|E|hh|mm|ss|SS|a\/p)/gi, function ($1) {
       switch ($1) {
         case "yyyy":
               return d.getFullYear();
@@ -1129,6 +1152,8 @@
             return $root.zPad(d.getMinutes(), 2);
         case "ss":
             return $root.zPad(d.getSeconds(), 2);
+        case "SS":
+            return $root.zPad(d.getMilliseconds(), 3);
         case "a/p":
             return d.getHours() < 12 ? "오전" : "오후";
         default:
@@ -1188,7 +1213,7 @@
       return null;
     }
     hour = Math.floor(hour); // 실수 정수화
-    return new $DATE(new Date(d.setHour(d.getHour() + hour)));
+    return new $DATE(new Date(d.setHours(d.getHours() + hour)));
   };
 
   /**
