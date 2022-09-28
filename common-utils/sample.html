@@ -4,11 +4,12 @@
     <title>테스트</title>
   
     <script src="./common-utils.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js" integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
     <!-- <script src="./dist/date-utils.min.js"></script> -->
   </head>
   <body>
     테스트1
-    <div id="test">
+    <div id="test" class="test" name="test-name">
       테스트 in id=test
       <p id="test-p">테스트박스입니다.</p>
     </div>
@@ -17,20 +18,30 @@
       <div>
         <div>
           <div name="list-test">
-            리스트 테스트박스 1 입니다.
+            <p>리스트 테스트박스 1-1 입니다.</p>
+            <p>리스트 테스트박스 1-2 입니다.</p>
           </div>
           <div name="list-test">
-            리스트 테스트박스 2 입니다.
+            <p>리스트 테스트박스 2-1 입니다.</p>
+            <p>리스트 테스트박스 2-2 입니다.</p>
           </div>
           <div name="list-test">
-            리스트 테스트박스 3 입니다.
+            <p>리스트 테스트박스 3-1 입니다.</p>
+            <p>리스트 테스트박스 3-2 입니다.</p>
           </div>
         </div>
       </div>
+    </div>
+
+
+    <div name="button-area">
+      <button type="button" name="allTest">클릭한꺼번에!</button>
+      <button type="button" name="singleTest">클릭하나씩</button>
     </div>
 
   </body>
 
   <script>
   </script>
+
 </html>

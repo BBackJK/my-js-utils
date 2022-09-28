@@ -348,16 +348,20 @@
    * Array a 가 v 를 가지고 있는지 확인.
    * @param {array} a 
    * @param {any} v 
+   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
    */
   fn.hasArrayItem = function (a, v) {
+    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
     return this.isArray(a) && a.indexOf(v) > -1;
   };
 
   /**
    * Array a 의 마지막 요소 가져오기.
    * @param {array} a 
+   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
    */
   fn.getArrayLastItem = function (a) {
+    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
     if (!this.isArray(a) || a.length < 1) {
       return null;
     }
@@ -369,9 +373,10 @@
    * object로 이루어진 array에서 object의 id 가 argument id 에 해당하는 item을 가져온다.
    * @param {array} a array
    * @param {string|number} id key
+   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
    */
   fn.getArrayItemById = function (a, id) {
-
+    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
     if (!this.isArray(a)) {
       throw new Error('[a] is not array');
     }
@@ -388,8 +393,10 @@
    * @param {array} a   배열
    * @param {string} k  object key property
    * @param {any} v     key property의 value와 비교할 value
+   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
    */
   fn.getArrayItem = function (a, k, v) {
+    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
     if (!this.isArray(a)) {
       throw new Error('[a] is not array');
     }
@@ -414,8 +421,10 @@
    * object로 이루어진 array에서 object의 id가 argument id 에 해당하는 item의 index를 가져온다.
    * @param {array} a
    * @param {string|number} id 
+   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
    */
   fn.getArrayIndexById = function (a, id) {
+    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
     if (!this.isArray(a)) {
       throw new Error('[a] is not array');
     }
@@ -432,8 +441,10 @@
    * @param {array} a   배열
    * @param {string} k  object key property
    * @param {any} v     key property의 value와 비교할 value
+   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
    */
   fn.getArrayIndex = function (a, k, v) {
+    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
     if (!this.isArray(a)) {
       throw new Error(' 첫번째 인자의 타입이 array 가 아닙니다. ');
     }
@@ -457,8 +468,10 @@
   /**
    * object로 이루어진 array에서 id 값으로 새로운 array 반환.
    * @param {array} a 
+   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
    */
   fn.makeArrayIdList = function (a) {
+    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
     if (!this.isArray(a)) {
       return [];
     }
@@ -476,8 +489,10 @@
    * startSequence 부터 endSequence 까지 숫자를 나열한다.
    * @param {number} startSequence 
    * @param {number} endSequence 
+   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
    */
   fn.makeArraySeqList = function (startSequence, endSequence) {
+    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
     if (!this.isNumber(startSequence) || !this.isNumber(endSequence)) {
       console.error(' 2, 3 번째 인자 타입이 number 가 아닙니다. ');
       return [];
@@ -626,27 +641,25 @@
     return Object.freeze(this);
   };
 
-  _DOM.fn = _DOM.prototype;
-
   /**
    * dom 가져오기.
    */
-  _DOM.fn.get = function () {
+  _DOM.prototype.get = function () {
     return this.$el;
   };
  
   /**
    * 첫번째 dom 가져오기.
    */
-  _DOM.fn.first = function () {
-    return this.$el ? fn.$DOM(this.$el[0]) : null;
+  _DOM.prototype.first = function () {
+    return this.$el ? new _DOM(this.$el[0]) : null;
   };
 
   /**
    * 마지막 dom 가져오기.
    */
-  _DOM.fn.last = function () {
-    return this.$el ? fn.$DOM(this.$el[this.$el.length - 1]) : null;
+  _DOM.prototype.last = function () {
+    return this.$el ? new _DOM(this.$el[this.$el.length - 1]) : null;
   };
 
   /**
@@ -654,7 +667,7 @@
    * @param {String} eventName 
    * @param {Function} callbackFunc 
    */
-  _DOM.fn.addEvent = function (eventName, callbackFunc) {
+  _DOM.prototype.addEvent = function (eventName, callbackFunc) {
     const $root = fn;
     if (!$root.isString(eventName) || !$root.isFunction(callbackFunc)) {
       throw new Error(' first argument type is available only string, second argument type is available function');
@@ -668,7 +681,7 @@
    * dom 요소에 className 추가
    * @param {string} className 
    */
-  _DOM.fn.addClass = function (className) {
+  _DOM.prototype.addClass = function (className) {
     className = className || '';
     for (let el of this.$el) {
       el.classList.add(className.toString());
@@ -679,7 +692,7 @@
    * dom 요소에 className 삭제
    * @param {string} className 
    */
-  _DOM.fn.removeClass = function (className) {
+  _DOM.prototype.removeClass = function (className) {
     className = className || '';
     for (let el of this.$el) {
       el.classList.remove(className.toString());
@@ -690,7 +703,7 @@
    * dom 요소에 className 토글
    * @param {string} className 
    */
-  _DOM.fn.toggleClass = function (className) {
+  _DOM.prototype.toggleClass = function (className) {
     className = className || '';
     for (let el of this.$el) {
       el.classList.toggle(className.toString());
@@ -700,7 +713,7 @@
   /**
    * dom 요소 display block
    */
-  _DOM.fn.show = function () {
+  _DOM.prototype.show = function () {
     this.setCss({
       display: 'show'
     });
@@ -709,7 +722,7 @@
   /**
    * dom 요소 display none
    */
-  _DOM.fn.hide = function () {
+  _DOM.prototype.hide = function () {
     this.setCss({
       display: 'none'
     });
@@ -719,7 +732,7 @@
    * dom 요소 css style 직접 설정.
    * @param {object} css css 옵션들을 객체로 표현.
    */
-  _DOM.fn.setCss = function (css) {
+  _DOM.prototype.setCss = function (css) {
     const $root = fn;
     if (!$root.isObject(css)) {
       css = {};
@@ -762,7 +775,7 @@
   /**
    * dom 요소의 부모 요소 가져오기
    */
-  _DOM.fn.parent = function () {
+  _DOM.prototype.parent = function () {
     const $root = fn;
     let r = [];
     for (let el of this.$el) {
@@ -770,14 +783,14 @@
         r.push(el.parentElement);
       }
     }
-    return fn.$DOM(r);
+    return new _DOM(r);
   };
 
   /**
    * dom 요소로부터 id 값으로 부모 요소 찾기.
    * @param {string} id 
    */
-  _DOM.fn.findParentById = function (id) {
+  _DOM.prototype.findParentById = function (id) {
     const $root = fn;
 
     let r = [];
@@ -788,14 +801,14 @@
       }
     }
 
-    return fn.$DOM(r);
+    return new _DOM(r);
   };
 
   /**
    * dom 요소로부터 class 명으로 부모 요소 찾기.
    * @param {string} className 
    */
-  _DOM.fn.findParentByClass = function (className) {
+  _DOM.prototype.findParentByClass = function (className) {
     const $root = fn;
 
     let r = [];
@@ -806,7 +819,7 @@
       }
     }
 
-    return fn.$DOM(r);
+    return new _DOM(r);
   };
 
   /**
@@ -814,7 +827,7 @@
    * @param {string} name
    * @param {HTMLElement|NodeList} element 
    */
-  _DOM.fn.findParentByName = function (name) {
+  _DOM.prototype.findParentByName = function (name) {
     const $root = fn;
 
     let r = [];
@@ -825,13 +838,13 @@
       }
     }
 
-    return fn.$DOM(r);
+    return new _DOM(r);
   };
 
   /**
    * dom 요소의 다음 요소 가져오기
    */
-  _DOM.fn.next = function () {
+  _DOM.prototype.next = function () {
     const $root = fn;
     let r = [];
     for (let el of this.$el) {
@@ -839,13 +852,13 @@
         r.push(el.nextElementSibling);
       }
     }
-    return fn.$DOM(r);
+    return new _DOM(r);
   };
 
   /**
    * dom 요소의 이전 요소 가져오기
    */
-  _DOM.fn.prev = function () {
+  _DOM.prototype.prev = function () {
     const $root = fn;
     let r = [];
     for (let el of this.$el) {
@@ -853,10 +866,10 @@
         r.push(el.previousElementSibling);
       }
     }
-    return fn.$DOM(r);
+    return new _DOM(r);
   };
 
-  _DOM.fn.find = function (selector) {
+  _DOM.prototype.find = function (selector) {
 
     let arr = [];
 
@@ -866,7 +879,7 @@
       }
     }
 
-    return fn.$DOM(arr);
+    return new _DOM(arr);
   };
 
   /**
@@ -961,57 +974,43 @@
                         date 관련 util
   ======================================================== */
 
-  fn.$date = {
-    test: function () {
-      console.log(1);
-    },
-    // // if (this instanceof fn.$date) {
+  fn.$date = $DATE = function () {
+    if (!$DATE.isDATE(this)) {
+      throw new Error(' add [new] keyword ');
+    }
+    let _this = this,
+        _input = undefined;
 
-    // console.log(this);
-    //   let _input = undefined;
+    if (arguments.length < 1) {
+      _input = new Date();
+    } else if (arguments.length === 1 && (fn.isString(arguments[0]) || $DATE.isDate(arguments[0]))) {
+      _input = arguments[0];
+    } else {
+      const args = Array.prototype.slice.call(arguments);
 
-    //   if (arguments.length < 1) {
-    //     _input = new Date();
-    //   } else if (arguments.length === 1 && (fn.isString(arguments[0]) || $DATE.isDate(arguments[0]))) {
-    //     _input = arguments[0];
-    //   } else {
-    //     const args = Array.prototype.slice.call(arguments);
+      for (let i=args.length; i < 6; i++) {
+        args.push( i < 3 ? 1 : 0 );
+      }
 
-    //     for (let i=args.length; i < 6; i++) {
-    //       args.push( i < 3 ? 1 : 0 );
-    //     }
+      const _args = args.map(function (arg) {
+        return fn.zPad(arg.toString(), 2);
+      });
 
-    //     const _args = args.map(function (arg) {
-    //       return fn.zPad(arg.toString(), 2);
-    //     });
+      const _year = _args[0],
+            _month = _args[1],
+            _day = _args[2],
+            _hour = _args[3],
+            _minutes = _args[4],
+            _seconds = _args[5];
 
-    //     const _year = _args[0],
-    //           _month = _args[1],
-    //           _day = _args[2],
-    //           _hour = _args[3],
-    //           _minutes = _args[4],
-    //           _seconds = _args[5];
-
-    //     _input = _year + '-' + _month + '-' + _day + ' ' + _hour + ':' + _minutes + ':' + _seconds;
-    //   }
-    //   console.log($DATE.prototype.constructor.takeGap(new Date(), new Date()));
-
-    //   return new $DATE(_input);
-    // // }
-    // // return this;
-  };
-
-  const $DATE = function(_input) {
-
-    const _this = this;
+      _input = _year + '-' + _month + '-' + _day + ' ' + _hour + ':' + _minutes + ':' + _seconds;
+    }
 
     _this.input = _input;
     _this.date = toDate(_input);
 
     return Object.freeze(_this);
   };
-
-  $DATE.fn = $DATE.prototype;
 
   // 2022-09-01 18:00:00
   const STR_DATE_FORMAT_DATETIME_HYPHEN_REG = /^[0-9]{4}\-[0-9]{1,2}\-[0-9]{1,2}\s[0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}$/;
@@ -1098,7 +1097,7 @@
    * date를 string 으로 변환
    * @param {string} format ex) 'yyyyMMddhhmmss', 'yyyy-MM-dd hh:mm:ss'
    */
-  $DATE.fn.format = function (format) {
+  $DATE.prototype.format = function (format) {
     const $root = fn;
     let f = fn.isString(format) ? format : 'yyyy-MM-dd',
         d = this.date;
@@ -1142,7 +1141,7 @@
    * value로부터 나온 date 에 year 년 후 의 date값을 구함.
    * @param {number} year 모든 정수
    */
-  $DATE.fn.addYear = function (year) {
+  $DATE.prototype.addYear = function (year) {
     const $root = fn,
           d = parseDate(this);
     if (!$root.isDate(d)) {
@@ -1156,7 +1155,7 @@
    * value로부터 나온 date 에 month 월 후 의 date값을 구함.
    * @param {number} month 모든 정수
    */
-  $DATE.fn.addMonth = function (month) {
+  $DATE.prototype.addMonth = function (month) {
     const d = parseDate(this);
     if (!$DATE.isDate(d)) {
       return null;
@@ -1169,7 +1168,7 @@
    * value로부터 나온 date 에 date 일 후 의 date값을 구함.
    * @param {number} date 모든 정수
    */
-  $DATE.fn.addDate = function (date) {
+  $DATE.prototype.addDate = function (date) {
     const d = parseDate(this);
   
     if (!$DATE.isDate(d)) {
@@ -1183,7 +1182,7 @@
    * value로부터 나온 date 에 hour 시간 후 의 date값을 구함.
    * @param {number} hour 모든 정수
    */
-  $DATE.fn.addHour = function (hour) {
+  $DATE.prototype.addHour = function (hour) {
     const d = parseDate(this);
     if (!$DATE.isDate(d)) {
       return null;
@@ -1196,7 +1195,7 @@
    * value로부터 나온 date 에 minutes 분 후 의 date값을 구함.
    * @param {number} minutes 모든 정수
    */
-  $DATE.fn.addMinutes = function (minutes) {
+  $DATE.prototype.addMinutes = function (minutes) {
     const d = parseDate(this);
     if (!$DATE.isDate(d)) {
       return null;
@@ -1208,7 +1207,7 @@
   /**
    * 각 time 값들을 배열로 반환
    */
-  $DATE.fn.parseList = function () {
+  $DATE.prototype.parseList = function () {
     const d = parseDate(this);
     if (!$DATE.isDate(d)) {
       return [];
@@ -1228,11 +1227,15 @@
   /**
    * 현재 객체를 복사
    */
-  $DATE.fn.takeInstance = function () {
+  $DATE.prototype.takeInstance = function () {
     return new $DATE(this.input);
   };
 
-  $DATE.fn.isAfter = function (v) {
+  /**
+   * 현재 값이 인자 값보다 미래인지 확인.
+   * @param {*} v 
+   */
+  $DATE.prototype.isAfter = function (v) {
     let d = parseDate(v);
     if (!$DATE.isDate(d)) {
       return false;
@@ -1241,7 +1244,11 @@
     return d.getTime() < this.date.getTime();
   };
 
-  $DATE.fn.isAfterOrSame = function (v) {
+  /**
+   * 현재 시간 값이 인자 시간값보다 같은 시간이거나 미래인지 확인.
+   * @param {*} v 
+   */
+  $DATE.prototype.isAfterOrSame = function (v) {
     let d = parseDate(v);
     if (!$DATE.isDate(d)) {
       return false;
@@ -1250,7 +1257,11 @@
     return d.getTime() <= this.date.getTime();
   };
 
-  $DATE.fn.isBefore = function (v) {
+  /**
+   * 현재 시간 값이 인자 시간값보다 과거인지 확인.
+   * @param {*} v 
+   */
+  $DATE.prototype.isBefore = function (v) {
     let d = parseDate(v);
     if (!$DATE.isDate(d)) {
       return false;
@@ -1259,7 +1270,11 @@
     return d.getTime() > this.date.getTime();
   };
 
-  $DATE.fn.isBeforeOrSame = function (v) {
+  /**
+   * 현재 시간 값이 인자 시간값보다 같은 시간 이거나 과거인지 확인.
+   * @param {*} v 
+   */
+  $DATE.prototype.isBeforeOrSame = function (v) {
 
     let d = parseDate(v);
     if (!$DATE.isDate(d)) {
@@ -1269,7 +1284,11 @@
     return d.getTime() >= this.date.getTime();
   };
 
-  $DATE.fn.isSame = function (v) {
+  /**
+   * 현재 시간값과 인자 시간값이 같은지 확인.
+   * @param {*} v 
+   */
+  $DATE.prototype.isSame = function (v) {
     let d = parseDate(v);
     if (!$DATE.isDate(d)) {
       return false;
@@ -1278,7 +1297,10 @@
     return d.getTime() === this.date.getTime();
   };
 
-  $DATE.fn.takeStart = function () {
+  /**
+   * 현재 시간값의 해당 월의 1일을 구함.
+   */
+  $DATE.prototype.takeStart = function () {
     const d = parseDate(this);
     if (!$DATE.isDate(d)) {
       return null;
@@ -1287,7 +1309,10 @@
     return new $DATE(new Date(d.getFullYear(), d.getMonth(), 1));
   };
 
-  $DATE.fn.takeEnd = function () {
+  /**
+   * 현재 시간값의 해당 월의 마지막일을 구함.
+   */
+  $DATE.prototype.takeEnd = function () {
     const d = parseDate(this);
     if (!$DATE.isDate(d)) {
       return null;
