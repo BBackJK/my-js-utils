@@ -1759,11 +1759,11 @@ console.log($test1);
 console.log($today); // 인자값이 없을 경우 거나 date 객체로 변경하지 못하는 경우 오늘날을 기준으로 객체를 만든다.
 
 
-console.log($test1.isAfter($today));        // false;
-console.log($test1.isAfterOrSame($today));  // false;
-console.log($test1.isBefore($today));       // false;
-console.log($test1.isBeforeOrSame($today)); // false;
-console.log($test1.isSame($today));         // false;
+console.log($test1.isAfter($today));        // false
+console.log($test1.isAfterOrSame($today));  // false
+console.log($test1.isBefore($today));       // true
+console.log($test1.isBeforeOrSame($today)); // true
+console.log($test1.isSame($today));         // false
 ```
 
 #### 5.14 takeStart
