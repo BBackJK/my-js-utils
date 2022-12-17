@@ -142,6 +142,104 @@
     return this.isString(s) && this.isString(v) && s.indexOf(v) > -1;
   };
 
+  /**
+   * java String format 처리.
+   * 지원 형태 %s: 문자열, %d: 숫자
+   * @returns {string|*}
+   */
+  fn.sFormat = function () {
+    if (!arguments.length) {
+      console.error('arguments is not defined.');
+      return '';
+    }
+
+    if (typeof arguments[0] !== 'string') {
+      console.error('first argument type only string');
+      return '';
+    }
+
+    const argumentsArr = Array.prototype.slice.call(arguments);
+
+    const base = argumentsArr[0];
+    const values = argumentsArr.slice(1);
+
+    let index = 0;
+    return base.replace(/%(s|[0-9]{0,2}d)/gi, function ($1) {
+      let value = '';
+      switch (true) {
+        case /%s/.test($1):
+          value = values[index];
+          index++;
+          if (value === null || value === undefined) value = '';
+          return value.toString();
+
+        case /%[0-9]{0,2}d/.test($1):
+          value = values[index];
+          index++;
+          if (value === null || value === undefined) value = '';
+          return $fn.zPad(
+              value.toString(),
+              Number($1.replace(/[^0-9]/g, ''))
+          );
+
+        default:
+          index++;
+          return value;
+      }
+    });
+  };
+
+  /**
+   * uuid4
+   */
+  fn.uuid4 = function () {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+      });
+  };
+
+  /**
+   * uuid4 하이픈 없이
+   */
+  fn.uuid4s = function () {
+      return this.uuid4().replace(/\-/gi, '');
+  };
+
+  /**
+     * node string 을 만드는 wrapper 함수
+     * @param {string} tag 태그
+     * @param {object} attr 속성객체 ex) { class: '클래스명' }
+     * @param {array|string|number} children
+     */
+  fn.createNodeString = function (tag, attr, children) {
+    let str = '';
+
+    str = fn.sFormat('<%s', tag);
+
+    if (fn.isObject(attr)) { // attr 속성이 존재하면.. 속성 string 적용
+      for (let key in attr) {
+        const value = attr[key];
+        str += fn.sFormat(' %s="%s"', key, value);
+      }
+    }
+    str += '>'; // 기본 여는 태그 종료
+    if (children) { // 자식 string 적용
+      if (Array.isArray(children)) {
+        children.forEach(function (child) {
+            str += child;
+        });
+      } else if (fn.isString(children)) {
+        str += children;
+      } else if (fn.isNumber(children)) {
+        children = children.toString();
+        str += children;
+      }
+    }
+    str += fn.sFormat('</%s>', tag);
+
+    return str;
+  };
 
   /**
    * null이 아닌 값을 string 형태로 변경하여 숫자만 남기고, 3자리 마다 콤마(,)를 찍는다
@@ -348,170 +446,6 @@
     },
   };
 
-  /**
-   * Array a 가 v 를 가지고 있는지 확인.
-   * @param {array} a 
-   * @param {any} v 
-   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
-   */
-  fn.hasArrayItem = function (a, v) {
-    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
-    return this.isArray(a) && a.indexOf(v) > -1;
-  };
-
-  /**
-   * Array a 의 마지막 요소 가져오기.
-   * @param {array} a 
-   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
-   */
-  fn.getArrayLastItem = function (a) {
-    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
-    if (!this.isArray(a) || a.length < 1) {
-      return null;
-    }
-
-    return a[a.length - 1];
-  };
-
-  /**
-   * object로 이루어진 array에서 object의 id 가 argument id 에 해당하는 item을 가져온다.
-   * @param {array} a array
-   * @param {string|number} id key
-   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
-   */
-  fn.getArrayItemById = function (a, id) {
-    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
-    if (!this.isArray(a)) {
-      throw new Error('[a] is not array');
-    }
-
-    if (!this.isString(id) && !this.isNumber(id)) {
-      throw new Error('[id] type is only string or number');
-    }
-
-    return this.getArrayItem(a, 'id', id);
-  };
-
-  /**
-   * object로 이루어진 a에서 object의 k property 의 value 값이 v와 일치하는 첫번째 데이터를 get 
-   * @param {array} a   배열
-   * @param {string} k  object key property
-   * @param {any} v     key property의 value와 비교할 value
-   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
-   */
-  fn.getArrayItem = function (a, k, v) {
-    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
-    if (!this.isArray(a)) {
-      throw new Error('[a] is not array');
-    }
-
-    let r = null,
-        i = 0,
-        l = a.length;
-
-    for (i; i < l; i++) {
-      const item = a[i];
-
-      if (this.isObject(item) && item.hasOwnProperty(k) && item[k] === v) {
-        r = item;
-        break;
-      }
-    }
-
-    return r;
-  };
-
-  /**
-   * object로 이루어진 array에서 object의 id가 argument id 에 해당하는 item의 index를 가져온다.
-   * @param {array} a
-   * @param {string|number} id 
-   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
-   */
-  fn.getArrayIndexById = function (a, id) {
-    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
-    if (!this.isArray(a)) {
-      throw new Error('[a] is not array');
-    }
-
-    if (!this.isString(id) && !this.isNumber(id)) {
-      throw new Error('[id] type is only string or number');
-    }
-
-    return this.getArrayIndex(a, 'id', id);
-  };
-
-  /**
-   * object로 이루어진 a에서 object의 k property 의 value 값이 v와 일치하는 첫번째 데이터의 index를 get 
-   * @param {array} a   배열
-   * @param {string} k  object key property
-   * @param {any} v     key property의 value와 비교할 value
-   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
-   */
-  fn.getArrayIndex = function (a, k, v) {
-    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
-    if (!this.isArray(a)) {
-      throw new Error(' 첫번째 인자의 타입이 array 가 아닙니다. ');
-    }
-
-    let r = -1,         // 반환될 index
-        i = 0,          // for 문의 i
-        l = a.length;   // for 문의 max length
-
-    for (i; i < l; i++) {
-      const item = a[i];
-
-      if (this.isObject(item) && item.hasOwnProperty(k) && item[k] === v) {
-        r = i;
-        break;
-      }
-    }
-
-    return r;
-  };
-
-  /**
-   * object로 이루어진 array에서 id 값으로 새로운 array 반환.
-   * @param {array} a 
-   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
-   */
-  fn.makeArrayIdList = function (a) {
-    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
-    if (!this.isArray(a)) {
-      return [];
-    }
-
-    return a.map(function (i) {
-      if (!this.isObject(i) || i.hasOwnProperty('id')) {
-        throw new Error(' array 가 object로 이루어져있지 않거나 id property 가 존재하지않습니다. ');
-      }
-
-      return i.id;
-    });
-  };
-
-  /**
-   * startSequence 부터 endSequence 까지 숫자를 나열한다.
-   * @param {number} startSequence 
-   * @param {number} endSequence 
-   * @Deprecated $COMMON의 $array 프로퍼티로 사용중..
-   */
-  fn.makeArraySeqList = function (startSequence, endSequence) {
-    throw new Error(' 해당 메소드는 deprecated 되었습니다. $COMMON.$array를 참조해주세요. ');
-    if (!this.isNumber(startSequence) || !this.isNumber(endSequence)) {
-      console.error(' 2, 3 번째 인자 타입이 number 가 아닙니다. ');
-      return [];
-    }
-
-    let arr = [];
-
-    for (startSequence; startSequence <= endSequence; startSequence++) {
-      arr.push(startSequence);
-    }
-
-    return arr;
-  };
-
-
   /** ========================================================
                       object 관련 util
   ======================================================== */
@@ -519,19 +453,18 @@
   /**
    * object를 query parameter 화 시킨다.
    * @param {object} o query parameter 로 만들 객체 
+   * @param {array|null} nca query parameter에 포함 시키지 않을 객체
    */
-  fn.objectToQueryString = function (o) {
-
-    if (!this.isObject(o)) {
+  fn.objectToQueryString = function (o, nca) {
+    const $root = this;
+    if (!$root.isObject(o)) {
       return '';
     }
 
-    const _co = this.deepCopy(o);
-
-    return Object.entries(_co).map(function (kv) {
+    return Object.entries(o).map(function (kv) {
       const k = kv[0],
             v = kv[1].toString();
-      return k.concat('=').concat(encodeURIComponent(v));
+      return k.concat('=', encodeURIComponent(v));
     }).join('&');
   };
 
@@ -540,12 +473,14 @@
    * @param {array|null} na number array: query string 중 number 형태로 변경해야하는 key list
    */
   fn.queryStringToObject = function (na) {
+    const $root = this;
     let q = {};
 
     if (window) {
       // search array
       const sa = window.location.search.substring(1).split('&');
       const sal = sa.length;
+      const naIsArray = $root.isArray(na);
 
       for (let i=0; i<sal; i++) {
         const s = sa[i];
@@ -553,11 +488,8 @@
         const kv = s.split('=');
         const k = kv[0],
               v = kv.length === 1 ? '' : decodeURIComponent(kv[1].replace(/\+/g, " "));
-      
-        console.log(na);
-        console.log(k);
-
-        q[k] = this.isArray(na) && this.$array.hasItem(na, k)
+    
+        q[k] = naIsArray && $root.$array.hasItem(na, k)
               ? (isNaN(parseInt(v, 10)) ? 10 : parseInt(v, 10))
               : v;
       }
@@ -571,7 +503,8 @@
    * @param {number} d depth
    */
   fn.getUrlPathValueByDepth = function (d) {
-    if (!this.isNumber(d)) {
+    const $root = this;
+    if (!$root.isNumber(d)) {
       console.error(' argument type is only number ');
       return '';
     }
@@ -601,6 +534,25 @@
       // 타겟에 해당 key가 존재할 때 값을 복사
       if (t.hasOwnProperty(k)) {
         t[k] = this.deepCopy(s[k]);
+      }
+    }
+  };
+
+  /**
+   * source의 property를 target이 가지고 있으면 target의 property 의 source property value 값 복사.
+   * @param {object} s source
+   * @param {object} t target
+   */
+  fn.objectCopyPropertiesInitValues = function (s, t) {
+    if (!this.isObject(s) || !this.isObject(t)) {
+      console.error(' arguments 가 객체가 아닙니다. ');
+      return;
+    }
+
+    for (let k in s) {
+      // 타겟에 해당 key가 존재할 때 값을 복사
+      if (t.hasOwnProperty(k)) {
+          t[k] = this.deepCopy(s[k]) || t[k];
       }
     }
   };
