@@ -12,11 +12,11 @@
     let instance = new JK_DOM_UTILS.prototype.init(selector);
     if (!instance.$el) {
       return undefined;
-    } 
+    }
     return instance;
   };
 
-  var origin = JK_DOM_UTILS.fn = JK_DOM_UTILS.prototype;
+  JK_DOM_UTILS.fn = JK_DOM_UTILS.prototype;
 
   var init = JK_DOM_UTILS.fn.init = function(selector) {
     return find(this, selector);

@@ -50,6 +50,48 @@
         FULFILLED: 'fulfilled',
         REJECTED: 'rejected',
       }
+    },
+    HTTP: {
+      addHeader: function ( headerKey, headerValue ) {
+        const headerKeyValueMap = {};
+        headerKeyValueMap[ headerKey ] = headerValue;
+        return _private.HTTP.addHeaders.call( this, headerKeyValueMap ) ;
+      },
+      addHeaders: function ( headerKeyValueMap ) {
+        for ( let headerKey in headerKeyValueMap ) {
+          if ( this.headers.hasOwnProperty( headerKey ) && _HTTP.global.isEnableWarn() ) { // 이미 가지고 있으면..
+            console.warn( StringUtils.format('[{0}] key name is already registed.', headerKey));
+          }
+          this.headers[ headerKey ] = headerKeyValueMap[ headerKey ];
+        }
+        return this;
+      },
+      addInterceptor: function ( interceptor ) {
+        this.interceptors.push( interceptor );
+        return this;
+      },
+      setLoggingLevel: function ( loggingLevel ) {
+        this.loggingLevel = Utils.isNotNumber( loggingLevel ) 
+          ? _HTTP.LOGGING.ERROR
+          : loggingLevel;
+        return this;
+      },
+      setBaseUrl: function ( baseUrl ) {
+        this.baseUrl = baseUrl;
+        return this;
+      },
+      setMethod: function ( method ) {
+        this.methodName = method;
+        return this;
+      },
+      setMaster: function ( master ) {
+        this.masterInstance = master;
+        return this;
+      },
+      setContentType: function ( contentType ) {
+        this.contentType = contentType;
+        return this;
+      }
     }
   };
   //#endregion
@@ -1444,6 +1486,30 @@
   //#endregion
 
   //#region Dom 유틸
+  const Elx = function ( el ) {
+    let dom = el;
+    if ( Utils.isString( el ) ) {
+      if ( el.charAt(0) === '#' ) {
+        dom = document.querySelector( el );
+      } else {
+        dom = document.querySelector( StringUtils.format('#{0}', el) );
+      }
+    }
+
+    if ( Utils.isJquery( el ) ) {
+      if ( el.length !== 1 ) {
+        throw Error('Root dom 은 하나만 존재하여야 합니다.');
+      }
+      dom = el[ 0 ];
+    }
+
+    // getElementById ==> HTMLDivElement => HTMLElement => Element => Node
+    // 
+
+    // if ( dom instanceof HTMLElement )
+
+    this.$el = dom;
+  };
   //#endregion
 
   //#region Promise
@@ -1582,6 +1648,183 @@
   };
   //#endregion
 
+  //#region HTTP 유틸
+  const $commonHttpWrapper = function () {
+    this.methodName = Utils.isEmpty( _HTTP.global.methodName ) ? _private.HTTP.METHOD.GET : _HTTP.global.methodName;
+    this.baseUrl = Utils.isEmpty( _HTTP.global.baseUrl ) ? '' : _HTTP.global.baseUrl;
+    this.inputUrl = '';
+    this.requestUrl = '';
+    this.payload = undefined;
+    this.headers = Utils.cp( _HTTP.global.headers );
+    this.interceptors = Utils.cp( _HTTP.global.interceptors );
+    this.masterInstance = Utils.cp( _HTTP.global.masterInstance );
+    this.loggingLevel = Utils.isEmpty( _HTTP.global.loggingLevel ) || Utils.isNotNumber( _HTTP.global.loggingLevel ) ? _HTTP.LOGGING.ERROR : _HTTP.global.loggingLevel;
+    this.contentType = Utils.isEmpty( _HTTP.global.contentType ) ? _HTTP.CONTENT_TYPE.JSON : _HTTP.global.contentType;
+  };
+
+  $commonHttpWrapper.prototype.url = function ( url ) {
+    this.inputUrl = url;
+    return this;
+  };
+
+  $commonHttpWrapper.prototype.payload = function ( payload ) {
+    this.payload = payload;
+    return this;
+  };
+
+  $commonHttpWrapper.prototype.addHeader = function ( headerKey, headerValue ) {
+    return _private.HTTP.addHeader.call( this, headerKey, headerValue );
+  };
+
+  $commonHttpWrapper.prototype.addHeaders = function ( headerKeyValueMap ) {
+    return _private.HTTP.addHeaders.call( this, headerKeyValueMap );
+  };
+
+  $commonHttpWrapper.prototype.addInterceptor = function ( interceptor ) {
+    return _private.HTTP.addInterceptor.call( this, interceptor );
+  };
+
+  $commonHttpWrapper.prototype.setContentType = function ( contentType ) {
+    return _private.HTTP.setContentType.call( this, contentType );
+  };
+  
+  $commonHttpWrapper.prototype.master = function ( master ) {
+    return _private.HTTP.setMaster.call( this, master );
+  };
+
+  $commonHttpWrapper.prototype.setLoggingLevel = function ( loggingLevel ) {
+    return _private.HTTP.setLoggingLevel.call( this, loggingLevel );
+  };
+
+  const $httpWrapper = function ( master, url ) {
+    this.constructor();
+    this.masterInstance = master;
+    this.inputUrl = url;
+  };
+
+  $httpWrapper.prototype = Object.create( $commonHttpWrapper.prototype );
+
+  $httpWrapper.prototype.method = function ( method ) {
+    this.methodName = method;
+    return this;
+  };
+
+  const $assignedMethodHttpWrapper = function ( master, method, url ) {
+    this.constructor();
+    this.masterInstance = master;
+    this.methodName = method;
+    this.inputUrl = url;
+  };
+
+  $assignedMethodHttpWrapper.prototype = Object.create( $commonHttpWrapper.prototype );
+
+  const _HTTP = {
+    METHOD: {
+      GET: 'GET',
+      POST: 'POST',
+      PATCH: 'PATCH',
+      PUT: 'PUT',
+      DELETE: 'DELETE'
+    },
+    CONTENT_TYPE: {
+      JSON: 'application/json',
+      TEXT: {
+        CSS: 'text/css',
+        HTML: 'text/html',
+        JAVASCRIPT: 'text/javascript',
+        PLAIN: 'text/plain',
+        XML: 'text/xml',
+      },
+      DOWNLOAD: 'application/octet-stream',
+      XML: 'application/xml',
+      FORM: 'x-www-form-urlencoded',
+      MULTIPART: 'multipart/form-data',
+    },
+    LOGGING: {
+      NONE: 0,
+      DEBUG: 1,
+      WARN: 2,
+      ERROR: 3
+    }
+  };
+
+  _HTTP.global = {
+    headers: {},
+    interceptors: [],
+    baseUrl: '',
+    methodName: '',
+    loggingLevel: _HTTP.LOGGING.ERROR,
+    contentType: _HTTP.CONTENT_TYPE.JSON,
+    masterInstance: undefined,
+    isEnableDebug: function () {
+      return this.loggingLevel >= _HTTP.LOGGING.DEBUG;
+    },
+    isEnableWarn: function () {
+      return this.loggingLevel >= _HTTP.LOGGING.WARN;
+    },
+    isEnableError: function () {
+      return this.loggingLevel >= _HTTP.LOGGING.ERROR;
+    },
+    addHeader: function ( headerKey, headerValue ) {
+      return _private.HTTP.addHeader.call( this, headerKey, headerValue );
+    },
+    addHeaders: function ( headerKeyValueMap ) {
+      return _private.HTTP.addHeaders.call( this, headerKeyValueMap );
+    },
+    addInterceptor: function ( interceptor ) {
+      return _private.HTTP.addInterceptor.call( this, interceptor );
+    },
+    setLoggingLevel: function ( loggingLevel ) {
+      return _private.HTTP.setLoggingLevel.call( this, loggingLevel );
+    },
+    setBaseUrl: function ( baseUrl ) {
+      return _private.HTTP.setBaseUrl.call( this, baseUrl );
+    },
+    setMethod: function ( method ) {
+      return _private.HTTP.setMethod.call( this, method );
+    },
+    setMaster: function ( master ) {
+      return _private.HTTP.setMaster.call( this, master );
+    },
+    setContentType: function ( contentType ) {
+      return _private.HTTP.setContentType.call( this, contentType );
+    },
+  };
+
+  _HTTP.get = function ( url ) {
+    return this.request( _HTTP.METHOD.GET, url );
+  };
+
+  _HTTP.post = function ( url ) {
+    return this.request( _HTTP.METHOD.POST, url );
+  };
+
+  _HTTP.patch = function ( url ) {
+    return this.request( _HTTP.METHOD.PATCH, url );
+  };
+
+  _HTTP.put = function ( url ) {
+    return this.request( _HTTP.METHOD.PUT, url );
+  };
+
+  _HTTP.delete = function ( url ) {
+    return this.request( _HTTP.METHOD.DELETE, url );
+  };
+
+  _HTTP.request = function ( method, url ) {
+    return this.create( null, method, url );
+  };
+
+  _HTTP.create = function ( master, method, url ) {
+    if ( Utils.isEmpty( method ) ) {
+      return new $httpWrapper( master, url );
+    }
+    return new $assignedMethodHttpWrapper( master, method, url);
+  };
+
+  //endregion
+
+
   //#region 공통 유틸
   const Utils = {
     string: StringUtils,
@@ -1591,15 +1834,7 @@
     date: DateUtils,
     dom: {},
     promise: _Promise,
-    http:{}
-    // this.string = StringUtils;
-    // this.number = NumberUtils;
-    // this.array = ArrayUtils;
-    // this.object = Object.freeze(new ObjectUtils());
-    // this.date = DateUtils;
-    // this.dom = {};
-    // this.promise = _Promise;
-    // this.http = {};
+    http: _HTTP,
   };
 
   /**
@@ -1699,6 +1934,11 @@
 
   Utils.isWindow = function (target) {
     return this.getRawType(target, 1, 1) === 'window';
+  };
+
+
+  Utils.isElement = function ( target ) {
+    return target instanceof HTMLElement;
   };
 
   /**

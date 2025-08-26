@@ -42,37 +42,6 @@
   </body>
 
   <script>
-    const $test1 = new $COMMON.$date('2022-09-28');
-    const $today = new $COMMON.$date();
-    /**
-     * $DATE {
-     *  input: '2022-09-28',
-     *  date: Wed Sep 28 2022 00:00:00 GMT+0900 (한국 표준시) {}
-     * }
-     */
-    console.log($test1);
-
-    /**
-     * $DATE {
-     *  input: Wed Sep 28 2022 17:30:56 GMT+0900 (한국 표준시) {},
-     *  date: Wed Sep 28 2022 17:30:56 GMT+0900 (한국 표준시) {}
-     * }
-     */
-    console.log($today);
-
-
-    console.log($COMMON.$date.takeGap($test1, $today));       // [0, 17, 30, 56]
-    console.log($COMMON.$date.takeGap($test1, $today, 'h'));  // [0, 17, 30, 56]
-    console.log($COMMON.$date.takeGap($test1, $today, 'm'));  // [0, 0, 1050, 56]
-    console.log($COMMON.$date.takeGap($test1, $today, 's'));  // [0, 0, 0, 63056]
-
-
-    console.log($COMMON.$date.takeGap($test1, '2022-09-26 12:53'));       // [1, 11, 7, 0] (1일 11시간 7분 차이난다.)
-    console.log($COMMON.$date.takeGap($test1, '2022-09-26 12:53', 'h'));  // [0, 35, 7, 0] (35시간 7분 차이난다.)
-    console.log($COMMON.$date.takeGap($test1, '2022-09-26 12:53', 'm'));  // [0, 0, 2107, 0] (2107분 차이난다.)
-    console.log($COMMON.$date.takeGap($test1, '2022-09-26 12:53', 's'));  // [0, 0, 0, 126420] (126420초 차이난다.)
-
-
 
   </script>
 
